@@ -1,0 +1,27 @@
+Guru Meditation Error: Core  1 panic'ed (LoadProhibited). Exception was unhandled.<\r><\n>
+<\r><\n>
+Core  1 register dump:<\r><\n>
+PC      : 0x4201dafe  PS      : 0x00060030  A0      : 0x8202016c  A1      : 0x3fcf69c0  <\r><\n>
+A2      : 0x3fca3290  A3      : 0x00000000  A4      : 0x00000021  A5      : 0x00000013  <\r><\n>
+A6      : 0x00060023  A7      : 0x00000003  A8      : 0x00060630  A9      : 0x400559e0  <\r><\n>
+A10     : 0x00000001  A11     : 0x3fca33c8  A12     : 0x00000010  A13     : 0x3fca33cc  <\r><\n>
+A14     : 0x00000001  A15     : 0x3fcf5220  SAR     : 0x0000001c  EXCCAUSE: 0x0000001c  <\r><\n>
+EXCVADDR: 0x00060634  LBEG    : 0x40056f5c  LEND    : 0x40056f72  LCOUNT  : 0xffffffff  <\r><\n>
+<\r><\n>
+<\r><\n>
+Backtrace:
+_lv_event_mark_deleted at /home/johnR/mydriveOLD/takakoProject/CMes/doc/screen4_3_inch/nockanda_7inch/lib/lvgl/src/core/lv_event.c:155
+lv_obj_destructor at /home/johnR/mydriveOLD/takakoProject/CMes/doc/screen4_3_inch/nockanda_7inch/lib/lvgl/src/core/lv_obj.c:435
+_lv_obj_destruct at /home/johnR/mydriveOLD/takakoProject/CMes/doc/screen4_3_inch/nockanda_7inch/lib/lvgl/src/core/lv_obj_class.c:136 (discriminator 1)
+obj_del_core at /home/johnR/mydriveOLD/takakoProject/CMes/doc/screen4_3_inch/nockanda_7inch/lib/lvgl/src/core/lv_obj_tree.c:389
+obj_del_core at /home/johnR/mydriveOLD/takakoProject/CMes/doc/screen4_3_inch/nockanda_7inch/lib/lvgl/src/core/lv_obj_tree.c:366
+lv_obj_clean at /home/johnR/mydriveOLD/takakoProject/CMes/doc/screen4_3_inch/nockanda_7inch/lib/lvgl/src/core/lv_obj_tree.c:94
+_ZN17DowntimeErrorPage8updateUIEv at /home/johnR/mydriveOLD/takakoProject/CMes/doc/screen4_3_inch/nockanda_7inch/src/DowntimeErrorPage.cpp:594
+_ZN17DowntimeErrorPage18fetchDowntimeErrorEv at /home/johnR/mydriveOLD/takakoProject/CMes/doc/screen4_3_inch/nockanda_7inch/src/DowntimeErrorPage.cpp:504
+_ZN14ProductionPage13fetchProductsEv at /home/johnR/mydriveOLD/takakoProject/CMes/doc/screen4_3_inch/nockanda_7inch/src/production.cpp:772
+_Z11LGVLRunTaskPv at /home/johnR/mydriveOLD/takakoProject/CMes/doc/screen4_3_inch/nockanda_7inch/src/main.cpp:472 (discriminator 15)
+<\r><\n>
+<\r><\n>
+<\r><\n>
+<\r><\n>
+ELF file SHA256: 2d7830db9fbcc310

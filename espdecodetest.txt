@@ -1,0 +1,17 @@
+Guru Meditation Error: Core  1 panic'ed (LoadProhibited). Exception was unhandled.<\r><\n>
+<\r><\n>
+Core  1 register dump:<\r><\n>
+PC      : 0x4201dafe  PS      : 0x00060030  A0      : 0x8202016c  A1      : 0x3fcf69c0  <\r><\n>
+A2      : 0x3fca3290  A3      : 0x00000000  A4      : 0x00000021  A5      : 0x00000013  <\r><\n>
+A6      : 0x00060023  A7      : 0x00000003  A8      : 0x00060630  A9      : 0x400559e0  <\r><\n>
+A10     : 0x00000001  A11     : 0x3fca33c8  A12     : 0x00000010  A13     : 0x3fca33cc  <\r><\n>
+A14     : 0x00000001  A15     : 0x3fcf5220  SAR     : 0x0000001c  EXCCAUSE: 0x0000001c  <\r><\n>
+EXCVADDR: 0x00060634  LBEG    : 0x40056f5c  LEND    : 0x40056f72  LCOUNT  : 0xffffffff  <\r><\n>
+<\r><\n>
+<\r><\n>
+Backtrace: 0x4201dafb:0x3fcf69c0 0x42020169:0x3fcf69e0 0x420e2b5f:0x3fcf6a00 0x420247f1:0x3fcf6a20 0x42024827:0x3fcf6a40 0x42024965:0x3fcf6a60 0x420091fc:0x3fcf6a80 0x4200a3b3:0x3fcf6aa0 0x42010fd3:0x3fcf6cd0 0x4200e119:0x3fcf6fb0<\r><\n>
+<\r><\n>
+<\r><\n>
+<\r><\n>
+<\r><\n>
+ELF file SHA256: 2d7830db9fbcc310
