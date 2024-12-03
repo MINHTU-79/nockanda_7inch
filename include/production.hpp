@@ -21,10 +21,15 @@ public:
   //RunningJob runningJob;
   void fetchProducts();
 
+  static void refreshPage(lv_event_t *e);
+
+
 private:
   ConfigManager *config;
   lv_obj_t *page;
   lv_obj_t *content_container;
+  lv_obj_t *container;
+  // lv_obj_t *ObjSpinner;
 
 
   lv_obj_t *ddStation;
@@ -56,7 +61,6 @@ private:
 
   // Hàm để fetch và cập nhật thông tin Job
   void updateJobInfo(const JsonObject &job);
-  static void refreshPage(lv_event_t *e);
 };
 
 #endif // PRODUCTION_HPP

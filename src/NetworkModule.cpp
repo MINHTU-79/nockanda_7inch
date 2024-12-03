@@ -106,12 +106,12 @@ void NetworkModule::reConnect()
     {
         if (configMgr.config.previouslyConnected == true && WiFi.status() != WL_CONNECTED)
         {
-            Serial.println("WiFi connection has been interrupted. Trying to reconnect…");
+            Serial.println("WiFi connection has been interrupted. Trying to reconnect...");
 
             // // WiFi.reconnect(); // Thay 'ssid' và 'password' bằng thông tin mạng WiFi của bạn
             // WiFi.disconnect(true, true);
             // WiFi.begin(ssid, password);
-
+            Serial.println("SSSSS");
             WiFi.begin(ssid, password);
             Serial.println("Connecting..");
            update_wifi_status(false);

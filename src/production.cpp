@@ -17,6 +17,25 @@ extern DowntimeErrorPage *downtimeErrorPage;
 
 extern lv_obj_t *create_top_bar(lv_obj_t *parent, const char *title, lv_event_cb_t back_cb, void *back_cb_user_data, lv_event_cb_t refresh_cb, void *refresh_cb_user_data);
 
+// Hàm kiểm tra xem spinner đang ẩn hay hiện
+bool is_spinner_hidden(lv_obj_t *spinner) {
+    return lv_obj_has_flag(spinner, LV_OBJ_FLAG_HIDDEN);
+}
+
+// Hàm cập nhật hiển thị spinner
+void set_spinner_visibility(lv_obj_t *spinner, bool visible) {
+    if (visible) {
+      Serial.println("AAAAAAAAAAAShow spinner set clean");
+        lv_obj_clear_flag(spinner, LV_OBJ_FLAG_HIDDEN); // Hiển thị spinner
+    } else {
+      Serial.println("AAAAAAAAAAAShow spinner set hindden");
+
+        lv_obj_add_flag(spinner, LV_OBJ_FLAG_HIDDEN); // Ẩn spinner
+
+        lv_obj_invalidate(spinner); // Yêu cầu cập nhật lại vùng hiển thị của spinner
+    }
+}
+
 ProductionPage::ProductionPage(ConfigManager *configMgr)
     : config(configMgr)
 {
@@ -35,6 +54,8 @@ ProductionPage::ProductionPage(ConfigManager *configMgr)
       ProductionPage::refreshPage,     // Callback nút Refresh
       this);
 
+
+
   // Container chính bao phủ toàn bộ trang (thanh bar đã có từ constructor)
   content_container = lv_obj_create(page);
   lv_obj_set_size(content_container, LV_PCT(100), lv_obj_get_height(page) - 50);
@@ -42,13 +63,30 @@ ProductionPage::ProductionPage(ConfigManager *configMgr)
   lv_obj_clear_flag(content_container, LV_OBJ_FLAG_SCROLLABLE);
   lv_obj_clear_flag(content_container, LV_OBJ_FLAG_SCROLL_MOMENTUM); // Tắt cuộn quán tính cho trang chính
   lv_obj_align(content_container, LV_ALIGN_TOP_MID, 0, 50);          // Đặt container1 dưới thanh bar, bỏ 50px
+
+
 }
 
 // Hàm tạo giao diện
 void ProductionPage::init()
 {
+  // Kiểm tra và xóa ObjSpinner nếu đã tồn tại
+  // if (ObjSpinner != NULL && lv_obj_is_valid(ObjSpinner))
+  // {
+    
+  // }
 
- 
+  
+  // // Tạo một spinner (loader) để báo hiệu đang tải
+  //   ObjSpinner = lv_spinner_create(page, 1000, 60);  // 1 giây cho một vòng quay
+  //   lv_obj_set_size(ObjSpinner, 50, 50);             // Kích thước của spinner
+  //   lv_obj_align(ObjSpinner, LV_ALIGN_CENTER, 0, 0); // Đặt spinner ở giữa màn hình
+  //   // Ẩn spinner ban đầu
+  //   lv_obj_add_flag(ObjSpinner, LV_OBJ_FLAG_HIDDEN);
+
+  //   // Đưa spinner lên foreground nếu cần
+  //   lv_obj_move_foreground(ObjSpinner);
+
 
   // lv_obj_clean(content_container); // Chỉf xóa nội dung, giữ lại top bar
 
@@ -58,7 +96,7 @@ void ProductionPage::init()
   }
 
   // Tạo container con sử dụng flex layout để sắp xếp các thành phần theo cột
-  lv_obj_t *container = lv_obj_create(content_container);
+  container = lv_obj_create(content_container);
   lv_obj_set_flex_flow(container, LV_FLEX_FLOW_COLUMN); // Sắp xếp theo cột
   lv_obj_set_flex_align(container, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
   lv_obj_set_size(container, LV_PCT(100), LV_PCT(100)); // Kích thước đầy đủ
@@ -67,48 +105,6 @@ void ProductionPage::init()
   lv_obj_set_scrollbar_mode(container, LV_SCROLLBAR_MODE_ON);
   lv_obj_set_scroll_dir(container, LV_DIR_VER);              // Vertical scrolling
   lv_obj_clear_flag(container, LV_OBJ_FLAG_SCROLL_MOMENTUM); // Tắt cuộn quán tính cho trang chính
-
-  // // ---------------------------------------------------------------------------------
-  // // Thêm nút Back với Icon vào container1, sử dụng vị trí tuyệt đối
-  // // ---------------------------------------------------------------------------------
-  // lv_obj_t *btnBack = lv_btn_create(container1);
-  // lv_obj_set_size(btnBack, 30, 30); // Kích thước nhỏ cho nút icon
-
-  // // Đặt vị trí tuyệt đối trong container1
-  // lv_obj_set_style_pad_all(btnBack, 0, 0);
-  // lv_obj_set_pos(btnBack, 10, 10);              // Đặt ở góc trên bên trái
-  // lv_obj_set_align(btnBack, LV_ALIGN_TOP_LEFT); // Căn lề trên cùng bên trái
-
-  // lv_obj_add_event_cb(btnBack, [](lv_event_t *e)
-  //                     {
-  //                       lv_disp_load_scr(mainPage); // Điều hướng trở lại trang chính
-  //                     },
-  //                     LV_EVENT_CLICKED, NULL);
-
-  // // Thêm icon vào nút Back (sử dụng LV_SYMBOL_LEFT)
-  // lv_obj_t *btnBackIcon = lv_label_create(btnBack);
-  // lv_label_set_text(btnBackIcon, LV_SYMBOL_LEFT); // Icon mũi tên trái
-  // lv_obj_center(btnBackIcon);
-
-  // // ---------------------------------------------------------------------------------
-  // // Thêm nút Refetch với Icon vào container1, sử dụng vị trí tuyệt đối
-  // // ---------------------------------------------------------------------------------
-  // lv_obj_t *btnRefetch = lv_btn_create(container1); // Tạo nút Refetch
-  // lv_obj_set_size(btnRefetch, 30, 30);              // Kích thước nhỏ cho nút icon
-
-  // // Đặt vị trí tuyệt đối trong container1
-  // lv_obj_set_style_pad_all(btnRefetch, 0, 0);
-  // lv_obj_set_pos(btnRefetch, 0, 10);                // Đặt bên cạnh nút Back
-  // lv_obj_set_align(btnRefetch, LV_ALIGN_TOP_RIGHT); // Căn lề trên cùng bên trái
-
-  // // Sử dụng eventHandler với user_data là this
-  // lv_obj_add_event_cb(btnRefetch, ProductionPage::refreshPage, LV_EVENT_CLICKED, this);
-
-  // // Thêm icon vào nút Refetch (sử dụng LV_SYMBOL_REFRESH)
-  // lv_obj_t *btnRefetchIcon = lv_label_create(btnRefetch);
-  // lv_label_set_text(btnRefetchIcon, LV_SYMBOL_REFRESH); // Icon làm mới
-  // lv_obj_center(btnRefetchIcon);
-
   // ---------------------------------------------------------------------------------
   // Thêm các thành phần từ đoạn mã đầu tiên vào container sử dụng flex layout
   // ---------------------------------------------------------------------------------
@@ -287,356 +283,6 @@ lv_obj_t *ProductionPage::getPage()
   return page;
 }
 
-// void ProductionPage::fetchProducts(const String &stationCode)
-// {
-//   HTTPClient http;
-//   String url = config->config.httpIP + (config->config.httpPort != 0 ? ":" + String(config->config.httpPort) : "")    +
-//                config->config.pathGetRunningProductOnStation + URLEncode(stationCode.c_str());
-
-//   Serial.println("Fetching Running Job from: " + url); // Debugging URL
-
-//   try
-//   {
-//     http.begin(url);
-//     int httpCode = http.GET();
-
-//     if (httpCode == HTTP_CODE_OK)
-//     {
-//       String payload = http.getString();
-//       Serial.println("Running Job Payload: " + payload); // Debugging payload
-
-//       // Parse JSON
-//       DynamicJsonDocument doc(5024); // Dung lượng có thể điều chỉnh tùy nhu cầu
-//       DeserializationError error = deserializeJson(doc, payload);
-
-//       if (error)
-//       {
-//         Serial.print(F("deserializeJson() failed: "));
-//         Serial.println(error.f_str());
-//         return; // Thoát nếu phân giải JSON thất bại
-//       }
-
-//       // Chuyển đổi sang JsonObject
-//       JsonObject job = doc.as<JsonObject>();
-
-//       if (job.isNull())
-//       {
-//         Serial.println("Không có công việc nào đang chạy.");
-//         // Cập nhật UI để hiển thị không có công việc
-//         lv_label_set_text(labelNhanVien, "Nhan Vien: N/A");
-//         lv_label_set_text(labelMaHang, "Ma Hang: N/A");
-//         lv_label_set_text(labelDaChay, "Da Chay: N/A");
-//         lv_label_set_text(labelCounter, "Counter: N/A");
-//         return;
-//       }
-
-//       // Cập nhật UI với dữ liệu job
-//       updateJobInfo(job);
-
-//       // Lấy danh sách DowntimeDetails
-//       JsonArray downtimes = doc["DowntimeDetails"].as<JsonArray>();
-
-//       std::vector<DowntimeItem> downtimedetails;
-//       if (downtimes.size() > 0)
-//       {
-//         for (JsonObject downtime : downtimes)
-//         {
-//           DowntimeItem item;
-//           item.code = downtime["DowntimeCode"].as<String>().c_str();
-//           item.position = downtime["Position"].as<String>().c_str();
-//           item.time = downtime["Time"].as<String>().c_str();
-//           item.duration = downtime["Duration"].as<String>().c_str();
-//           downtimedetails.push_back(item);
-//         }
-//       }
-//       else
-//       {
-//         DowntimeItem defaultItem;
-//         defaultItem.code = "N/A";
-//         defaultItem.position = "N/A";
-//         defaultItem.time = "N/A";
-//         defaultItem.duration = "N/A";
-//         downtimedetails.push_back(defaultItem);
-//       }
-
-//       // Cập nhật trang DowntimePage
-//       downtimePage->setDowntimeDetails(downtimedetails);
-//     }
-//     else if (httpCode == 404)
-//     {
-//       String errorMessage = http.getString();
-//       // Serial.println("No running job found (404): " + errorMessage);
-//       Serial.println("Không có công việc nào đang chạy (404)." + errorMessage);
-
-//       // Cập nhật UI để hiển thị không có job
-//       Serial.println("Không có công việc nào đang chạy.");
-//       lv_label_set_text(labelNhanVien, "Nhan Vien: N/A");
-//       lv_label_set_text(labelMaHang, "Ma Hang: N/A");
-//       lv_label_set_text(labelDaChay, "Da Chay: N/A");
-//       lv_label_set_text(labelCounter, "Counter: N/A");
-
-//       // Hiển thị thông báo cho người dùng (tùy chọn)
-//       lv_obj_t *msgbox = lv_msgbox_create(NULL, "Notification", errorMessage.c_str(), NULL, true);
-//       lv_obj_center(msgbox);
-//     }
-//     else if (httpCode == 500)
-//     {
-//       String errorMessage = http.getString();
-//       Serial.println("Server Error (500): " + errorMessage);
-//       // Cập nhật UI để hiển thị không có job hoặc giữ nguyên trạng thái hiện tại
-
-//       // Hiển thị thông báo lỗi cho người dùng
-//       lv_obj_t *msgbox = lv_msgbox_create(NULL, "Server Error", errorMessage.c_str(), NULL, true);
-//       lv_obj_center(msgbox);
-//     }
-//     else
-//     {
-//       Serial.printf("Error in HTTP request: %d\n", httpCode);
-//       String errorMessage = http.getString();
-//       Serial.println("Server Response: " + errorMessage);
-//       // Có thể thêm xử lý cho các mã lỗi khác nếu cần
-//     }
-//   }
-//   catch (...)
-//   {
-//     Serial.println("Exception caught during fetchRunningJob."); // Xử lý ngoại lệ
-//     // Có thể hiển thị thông báo lỗi cho người dùng
-//     lv_obj_t *msgbox = lv_msgbox_create(NULL, "Error", "An error occurred when connecting to the server.", NULL, true);
-//     lv_obj_center(msgbox);
-//   }
-
-//   http.end();
-// }
-
-// void ProductionPage::fetchProducts(const String &stationCode)
-// {
-//     HTTPClient http;
-//     String url = config->config.httpIP + (config->config.httpPort != 0 ? ":" + String(config->config.httpPort) : "")    +
-//                  config->config.pathGetRunningProductOnStation + URLEncode(stationCode.c_str());
-
-//     Serial.println("Fetching Running Job from: " + url); // Debugging URL
-
-//     try
-//     {
-//         http.begin(url);
-//         int httpCode = http.GET();
-
-//         if (httpCode == HTTP_CODE_OK)
-//         {
-//             String payload = http.getString();
-//             Serial.println("Running Job Payload: " + payload); // Debugging payload
-
-//             // Parse JSON
-//             DynamicJsonDocument doc(8192); // Tăng kích thước nếu payload lớn
-//             DeserializationError error = deserializeJson(doc, payload);
-
-//             if (error)
-//             {
-//                 Serial.print(F("deserializeJson() failed: "));
-//                 Serial.println(error.f_str());
-//                 return;
-//             }
-
-//             // Extract main job data
-//             JsonObject job = doc.as<JsonObject>();
-//             String stationCode = job["stationCode"] | "N/A";
-//             String employee = job["employee"] | "N/A";
-//             String productCode = job["productCode"] | "N/A";
-//             float meterRan = job["meterRan"] | 0.0f;
-//             float totalMeter = job["totalMeter"] | 0.0f;
-//             int spinCount = job["spinCount"] | 0;
-
-//             // Update UI with main job data
-//             lv_label_set_text(labelNhanVien, ("Nhan Vien: " + employee).c_str());
-//             lv_label_set_text(labelMaHang, ("Ma Hang: " + productCode).c_str());
-
-//             String meterText = String(meterRan, 2) + " / " + String(totalMeter, 2);
-//             lv_label_set_text(labelDaChay, ("Da Chay: " + meterText).c_str());
-
-//             lv_label_set_text(labelCounter, ("Counter: " + String(spinCount)).c_str());
-
-//             // Extract and process downtime details
-//             JsonArray downtimes = job["downtimeInputs"].as<JsonArray>();
-//             std::vector<DowntimeItem> downtimedetails;
-
-//             if (!downtimes.isNull() && downtimes.size() > 0)
-//             {
-//                 for (JsonObject downtime : downtimes)
-//                 {
-//                     DowntimeItem item;
-//                     item.objectId = downtime["objectId"] | "N/A";
-//                     item.id = downtime["id"] | "N/A";
-//                     item.downtimeCode = downtime["downtimeCode"] | "N/A";
-//                     item.description = downtime["description"] | "N/A";
-//                     item.lossTime = downtime["lossTime"] | 0;
-//                     downtimedetails.push_back(item);
-//                 }
-//             }
-//             else
-//             {
-//                 // No downtimes, create a default item
-//                 DowntimeItem defaultItem;
-//                 defaultItem.downtimeCode = "N/A";
-//                 defaultItem.description = "No downtime recorded";
-//                 defaultItem.lossTime = 0;
-//                 downtimedetails.push_back(defaultItem);
-//             }
-
-//             // Update DowntimePage UI
-//             downtimePage->setDowntimeDetails(downtimedetails);
-//         }
-//         else if (httpCode == 404)
-//         {
-//             Serial.println("Không có công việc nào đang chạy (404).");
-//             lv_label_set_text(labelNhanVien, "Nhan Vien: N/A");
-//             lv_label_set_text(labelMaHang, "Ma Hang: N/A");
-//             lv_label_set_text(labelDaChay, "Da Chay: N/A");
-//             lv_label_set_text(labelCounter, "Counter: N/A");
-//         }
-//         else if (httpCode == 500)
-//         {
-//             Serial.println("Lỗi server (500).");
-//             lv_obj_t *msgbox = lv_msgbox_create(NULL, "Server Error", "Lỗi từ server", NULL, true);
-//             lv_obj_center(msgbox);
-//         }
-//         else
-//         {
-//             Serial.printf("Error in HTTP request: %d\n", httpCode);
-//         }
-//     }
-//     catch (...)
-//     {
-//         Serial.println("Exception caught during fetchRunningJob.");
-//         lv_obj_t *msgbox = lv_msgbox_create(NULL, "Error", "Đã xảy ra lỗi khi kết nối server.", NULL, true);
-//         lv_obj_center(msgbox);
-//     }
-
-//     http.end();
-// }
-
-// //ver này chưa có lưu tạm RunningJob rồi mới đưa vào mà nó ghi thẳng vào RunningJob.
-// void ProductionPage::fetchProducts()
-// {
-
-//   const String stationCode = config->config.fxStationCode;
-
-//   HTTPClient http;
-//   String url = config->config.httpIP + (config->config.httpPort != 0 ? ":" + String(config->config.httpPort) : "")  +
-//                config->config.pathGetRunningProductOnStation + URLEncode(stationCode.c_str());
-
-//   Serial.println("Fetching Running Job from: " + url); // Debugging URL
-
-//   try
-//   {
-//     http.begin(url);
-//     int httpCode = http.GET();
-
-//     if (httpCode == HTTP_CODE_OK)
-//     {
-//       String payload = http.getString();
-//       Serial.println("Running Job Payload: " + payload); // Debugging payload
-
-//       // Parse JSON
-//       DynamicJsonDocument doc(8192); // Tăng kích thước nếu payload lớn
-//       DeserializationError error = deserializeJson(doc, payload);
-
-//       if (error)
-//       {
-//         Serial.print(F("deserializeJson() failed: "));
-//         Serial.println(error.f_str());
-//         return;
-//       }
-
-//       // Extract main job data
-//       JsonObject job = doc.as<JsonObject>();
-
-//       roll.stationCode = job["stationCode"] | "N/A";
-//       roll.employee = job["employee"] | "N/A";
-//       roll.productCode = job["productCode"] | "N/A";
-//       roll.meterRan = job["meterRan"] | 0.0f;
-//       roll.totalMeter = job["totalMeter"] | 0.0f;
-//       roll.spinCount = job["spinCount"] | 0;
-
-//       // Update UI with main job data
-//       lv_label_set_text(labelNhanVien, ("Nhan Vien: " + roll.employee).c_str());
-//       lv_label_set_text(labelMaHang, ("Ma Hang: " + roll.productCode).c_str());
-
-//       String meterText = String(roll.meterRan, 2) + " / " + String(roll.totalMeter, 2);
-//       lv_label_set_text(labelDaChay, ("Da Chay: " + meterText).c_str());
-
-//       lv_label_set_text(labelCounter, ("Counter: " + String(roll.spinCount)).c_str());
-
-//       // Extract and process downtime details
-//       JsonArray downtimes = job["downtimeInputs"].as<JsonArray>();
-
-//       if (!downtimes.isNull() && downtimes.size() > 0)
-//       {
-//         for (JsonObject downtime : downtimes)
-//         {
-//           DowntimeItem item;
-//           item.atMeter = downtime["atMeter"] | -1;
-//           item.objectId = downtime["objectId"] | "N/A";
-//           item.id = downtime["id"] | "N/A";
-//           item.jobCode = downtime["jobCode"] | "N/A";
-//           item.stationCode = downtime["stationCode"] | "N/A";
-//           item.updateTime = downtime["updateTime"] | 0;
-//           item.startTime = downtime["startTime"] | 0;
-//           item.endTime = downtime["endTime"] | 0;
-//           item.downtimeCode = downtime["downtimeCode"] | "N/A";
-//           item.employeeCode = downtime["employeeCode"] | "N/A";
-//           item.description = downtime["description"] | "N/A";
-//           item.actualStopTime = downtime["actualStopTime"] | -1;
-//           item.approvalEmployeeCode = downtime["approvalEmployeeCode"] | 0;
-//           item.status = downtime["status"] | 1;
-//           item.temporarySolution = downtime["temporarySolution"] | "N/A";
-//           item.lossTime = downtime["lossTime"] | 0;
-//           item.rollCode = downtime["rollCode"] | "N/A";
-//           item.scheduleDowntime = downtime["scheduleDowntime"] | 0;
-//           item.unScheduleDowntime = downtime["unScheduleDowntime"] | 0;
-//           roll.downtimeInputs.push_back(item);
-//         }
-//       }
-//       else
-//       {
-//         // No downtimes, create a default item
-//         DowntimeItem defaultItem;
-//         defaultItem.downtimeCode = "N/A";
-//         defaultItem.description = "No downtime recorded";
-//         defaultItem.lossTime = 0;
-//         roll.downtimeInputs.push_back(defaultItem);
-//       }
-
-//       // Update DowntimePage UI
-//       downtimePage->setDowntimeDetails(roll.downtimeInputs);
-//     }
-//     else if (httpCode == 404)
-//     {
-//       Serial.println("Không có công việc nào đang chạy (404).");
-//       lv_label_set_text(labelNhanVien, "Nhan Vien: N/A");
-//       lv_label_set_text(labelMaHang, "Ma Hang: N/A");
-//       lv_label_set_text(labelDaChay, "Da Chay: N/A");
-//       lv_label_set_text(labelCounter, "Counter: N/A");
-//     }
-//     else if (httpCode == 500)
-//     {
-//       Serial.println("Lỗi server (500).");
-//       lv_obj_t *msgbox = lv_msgbox_create(NULL, "Server Error", "Lỗi từ server", NULL, true);
-//       lv_obj_center(msgbox);
-//     }
-//     else
-//     {
-//       Serial.printf("Error in HTTP request: %d\n", httpCode);
-//     }
-//     }
-//     catch (...)
-//     {
-//         Serial.println("Exception caught during fetchRunningJob.");
-//         lv_obj_t *msgbox = lv_msgbox_create(NULL, "Error", "Đã xảy ra lỗi khi kết nối server.", NULL, true);
-//         lv_obj_center(msgbox);
-//     }
-
-//     http.end();
-// }
 
 // ver này ghi ra RunningJob tạm trước .
 
@@ -783,6 +429,7 @@ void ProductionPage::fetchProducts()
     {
       Serial.println("Lỗi server (500).");
       lv_obj_t *msgbox = lv_msgbox_create(NULL, "Server Error", "Lỗi từ server", NULL, true);
+      lv_obj_set_style_text_font(msgbox, &arial, 0);
       lv_obj_center(msgbox);
     }
     else
@@ -810,6 +457,13 @@ void ProductionPage::fetchProducts()
   // }
 
   Serial.println("Eeeeeeeeeeeeeeeeeeend fetchProducts");
+
+  // Serial.println("ObjSpinner is hidden: " + String(is_spinner_hidden(ObjSpinner)));
+  // if (!is_spinner_hidden(ObjSpinner))
+  // {
+  //   Serial.println("Hide spinner");
+  //   set_spinner_visibility(ObjSpinner, false); // Ẩn spinner nếu nó đang hiện
+  // }
 }
 
 // Callback cho các trường nhập liệu
@@ -994,34 +648,39 @@ void ProductionPage::onChangeProduct()
   http.end(); // Kết thúc yêu cầu HTTP
 }
 
-void ProductionPage::refreshPage(lv_event_t *e)
-{
-  ProductionPage *page = (ProductionPage *)lv_event_get_user_data(e); // Lấy dữ liệu user_data là con trỏ tới lớp ProductionPage
+// void ProductionPage::refreshPage(lv_event_t *e)
+// {
+//   ProductionPage *page = (ProductionPage *)lv_event_get_user_data(e); // Lấy dữ liệu user_data là con trỏ tới lớp ProductionPage
 
-  // Tạo một spinner (loader) để báo hiệu đang tải
-  lv_obj_t *spinner = lv_spinner_create(page->page, 1000, 60); // 1 giây cho một vòng quay
-  lv_obj_set_size(spinner, 50, 50);                            // Kích thước của spinner
-  lv_obj_align(spinner, LV_ALIGN_CENTER, 0, 0);                // Đặt spinner ở giữa màn hình
 
-  // Tạo một timer để chờ trong khi spinner hoạt động
-  lv_timer_t *timer = lv_timer_create([](lv_timer_t *t)
-                                      {
-                                        // Lấy user_data từ timer
-                                        ProductionPage *page = (ProductionPage *)t->user_data; // Sử dụng t->user_data để lấy dữ liệu user_data
-                                        // lv_obj_clean(page->page);                              // Xoá sạch tất cả các đối tượng trên trang
-                                        page->init();    // Tạo lại giao diện
-                                        lv_timer_del(t); // Xoá timer khi xong
-                                      },
-                                      1000, page); // Tạo timer với thời gian tương ứng với thời gian của spinner
 
-  // Gán trực tiếp user_data
-  timer->user_data = page; // Gán user_data trực tiếp thông qua cấu trúc lv_timer_t
-}
+//   if (is_spinner_hidden(page->ObjSpinner))
+//   {
+//     set_spinner_visibility(page->ObjSpinner, true); // Hiển thị spinner nếu nó đang ẩn
+//     Serial.println("AAAAAAAAAAAAAAShow spinner");
+//   }
+
+//   page->init();
+ 
+//   // // Tạo một timer để chờ trong khi spinner hoạt động
+//   // lv_timer_t *timer = lv_timer_create([](lv_timer_t *t)
+//   //                                     {
+//   //                                       // Lấy user_data từ timer
+//   //                                       ProductionPage *page = (ProductionPage *)t->user_data; // Sử dụng t->user_data để lấy dữ liệu user_data
+//   //                                       // lv_obj_clean(page->page);                              // Xoá sạch tất cả các đối tượng trên trang
+//   //                                       page->init();    // Tạo lại giao diện
+//   //                                       lv_timer_del(t); // Xoá timer khi xong
+//   //                                     },
+//   //                                     1000, page); // Tạo timer với thời gian tương ứng với thời gian của spinner
+
+//   // // Gán trực tiếp user_data
+//   // timer->user_data = page; // Gán user_data trực tiếp thông qua cấu trúc lv_timer_t
+// }
 
 // ver này là hiện text thông bào khi refetch.
-//  void ProductionPage::refreshPage(lv_event_t *e)
-//  {
-//    ProductionPage *page = (ProductionPage *)lv_event_get_user_data(e); // Lấy dữ liệu user_data là con trỏ tới lớp ProductionPage
+// void ProductionPage::refreshPage(lv_event_t *e)
+// {
+//   ProductionPage *page = (ProductionPage *)lv_event_get_user_data(e); // Lấy dữ liệu user_data là con trỏ tới lớp ProductionPage
 
 //   // Tạo một timer để làm mới trang
 //   lv_timer_t *timer = lv_timer_create([](lv_timer_t *t)
@@ -1050,3 +709,56 @@ void ProductionPage::refreshPage(lv_event_t *e)
 //                                       },
 //                                       0, page); // Gán user_data cho timer
 // }
+
+
+// ver này là hiện text thông bào khi refetch.
+void ProductionPage::refreshPage(lv_event_t *e)
+{
+  ProductionPage *page = (ProductionPage *)lv_event_get_user_data(e); // Lấy dữ liệu user_data là con trỏ tới lớp ProductionPage
+
+  // Tạo một timer để làm mới trang
+  lv_timer_t *timer = lv_timer_create([](lv_timer_t *t)
+                                      {
+                                        // Lấy user_data từ timer
+                                        ProductionPage *page = (ProductionPage *)t->user_data;
+
+                                        // Làm mới giao diện
+                                        page->init();
+
+                                        // Hiển thị thông báo "Refetched successfully"
+                                        lv_obj_t *label = lv_label_create(page->page);
+                                        lv_label_set_text(label, "Tải lại thành công");
+                                        lv_obj_set_style_text_font(label, &arial, 0);
+
+                                        // Set the label's background color to blue and text color to white
+                                        lv_obj_set_style_bg_color(label, lv_color_hex(0xFFFFFF), 0);   // Blue background
+                                        lv_obj_set_style_text_color(label, lv_color_hex(0x000000), 0); // White text
+                                        lv_obj_set_style_bg_opa(label, LV_OPA_COVER, 0);               // Make background opaque
+
+                                        // Set border width, color, and round the corners
+                                        lv_obj_set_style_border_width(label, 2, 0);                      // Set border width
+                                        lv_obj_set_style_border_color(label, lv_color_hex(0x000000), 0); // White border
+
+                                        // Use lv_obj_set_style_radius to set rounded corners
+                                        lv_obj_set_style_radius(label, 9, 0); // Rounded corners with radius 10
+
+                                        // Add padding around the text
+                                        lv_obj_set_style_pad_all(label, 10, 0); // Padding of 10px on all sides
+
+                                        lv_obj_align(label, LV_ALIGN_CENTER, 0, 0); // Đặt thông báo ở giữa màn hình
+
+                                        
+
+                                        // Tạo một timer khác để xóa thông báo sau 1 giây
+                                        lv_timer_t *remove_timer = lv_timer_create([](lv_timer_t *t)
+                                                                                   {
+                                                                                     lv_obj_t *label = (lv_obj_t *)t->user_data;
+                                                                                     lv_obj_del(label); // Xóa thông báo
+                                                                                     lv_timer_del(t);   // Xóa timer
+                                                                                   },
+                                                                                   2000, label);
+
+                                        lv_timer_del(t); // Xóa timer ban đầu
+                                      },
+                                      0, page); // Gán user_data cho timer
+}

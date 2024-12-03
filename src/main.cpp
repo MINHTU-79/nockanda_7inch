@@ -8,14 +8,13 @@ LV_FONT_DECLARE(arial);
 
 static lv_style_t style; // Khai báo kiểu toàn cục
 
-//kiểm soát không touch trong bao lâu thì bắt đầu định kỳ refetch.
+// kiểm soát không touch trong bao lâu thì bắt đầu định kỳ refetch.
 static uint32_t last_touch_time = 0; // Lưu thời gian lần chạm cuối cùng
-#define INACTIVITY_TIMEOUT 17000    // Thời gian chờ không tương tác (ms)
+#define INACTIVITY_TIMEOUT 19000     // Thời gian chờ không tương tác (ms)
 
 static uint32_t lastFetchTime = millis();
 
 extern bool inited = false;
-
 
 // #include "mutex.h"
 #include "config.h"
@@ -34,8 +33,7 @@ extern ConfigManager configMgr;
 // cái này dùng cho "mutex.h"
 // SemaphoreHandle_t xMutexFetchProduction = NULL;
 
-//inline SemaphoreHandle_t xMutexFetchProduction;
-
+// inline SemaphoreHandle_t xMutexFetchProduction;
 
 PanelLan tft(BOARD_SC07);
 
@@ -52,12 +50,13 @@ static const uint16_t screenHeight = 480;
 static lv_disp_draw_buf_t draw_buf;
 static lv_color_t buf[2][screenWidth * 10];
 
-void set_default_font(void) {
-    lv_style_init(&style);
-    lv_style_set_text_font(&style, &arial);
+void set_default_font(void)
+{
+  lv_style_init(&style);
+  lv_style_set_text_font(&style, &arial);
 
-    // Áp dụng kiểu này cho toàn bộ giao diện người dùng
-    lv_obj_add_style(lv_scr_act(), &style, LV_PART_MAIN);
+  // Áp dụng kiểu này cho toàn bộ giao diện người dùng
+  lv_obj_add_style(lv_scr_act(), &style, LV_PART_MAIN);
 }
 
 /* Display flushing */
@@ -89,43 +88,41 @@ void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color
 //   }
 // }
 
-
 void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
 {
-    uint16_t touchX, touchY;
+  uint16_t touchX, touchY;
 
-    data->state = LV_INDEV_STATE_REL;
+  data->state = LV_INDEV_STATE_REL;
 
-    if (tft.getTouch(&touchX, &touchY))
-    {
-        data->state = LV_INDEV_STATE_PR;
+  if (tft.getTouch(&touchX, &touchY))
+  {
+    data->state = LV_INDEV_STATE_PR;
 
-        /*Set the coordinates*/
-        data->point.x = touchX;
-        data->point.y = touchY;
+    /*Set the coordinates*/
+    data->point.x = touchX;
+    data->point.y = touchY;
 
-        // Cập nhật thời gian chạm cuối cùng
-        last_touch_time = millis();
-    }
+    // Cập nhật thời gian chạm cuối cùng
+    last_touch_time = millis();
+  }
 }
 bool check_inactivity()
 {
-    if (millis() - last_touch_time > INACTIVITY_TIMEOUT)
-    {
-        // Hành động khi không tương tác trong thời gian dài
-        // Serial.println("Không có thao tác, thực hiện hành động...");
-        
-        // // Ví dụ: reset giao diện, hiển thị màn hình chờ, v.v.
-        // lv_label_set_text(my_label, "Đã lâu không thao tác!");
-        
-        // Reset lại thời gian để tránh lặp lại liên tục
-        last_touch_time = millis();
-        
-        return true;
-    }
-    return false;
-}
+  if (millis() - last_touch_time > INACTIVITY_TIMEOUT)
+  {
+    // Hành động khi không tương tác trong thời gian dài
+    // Serial.println("Không có thao tác, thực hiện hành động...");
 
+    // // Ví dụ: reset giao diện, hiển thị màn hình chờ, v.v.
+    // lv_label_set_text(my_label, "Đã lâu không thao tác!");
+
+    // Reset lại thời gian để tránh lặp lại liên tục
+    last_touch_time = millis();
+
+    return true;
+  }
+  return false;
+}
 
 inline lv_obj_t *mainPage;
 
@@ -183,6 +180,11 @@ lv_obj_t *create_top_bar(lv_obj_t *parent, const char *title, lv_event_cb_t back
   lv_obj_set_style_radius(bar, 0, 0);
   lv_obj_clear_flag(bar, LV_OBJ_FLAG_SCROLLABLE); // Không cuộn
 
+  // Tạo kiểu cho nút khi nhấn
+  static lv_style_t style_pressed;
+  lv_style_init(&style_pressed);
+  lv_style_set_bg_color(&style_pressed, lv_color_hex(0x960000)); // Màu đỏ nhạt
+
   // Nút Back
   if (back_cb != NULL)
   {
@@ -190,6 +192,8 @@ lv_obj_t *create_top_bar(lv_obj_t *parent, const char *title, lv_event_cb_t back
     lv_obj_set_size(back_btn, 30, 50);
     lv_obj_align(back_btn, LV_ALIGN_LEFT_MID, 0, 0);
     lv_obj_add_event_cb(back_btn, back_cb, LV_EVENT_CLICKED, back_cb_user_data);
+
+    lv_obj_add_style(back_btn, &style_pressed, LV_STATE_PRESSED);
 
     lv_obj_t *back_label = lv_label_create(back_btn);
     lv_label_set_text(back_label, LV_SYMBOL_LEFT);
@@ -202,7 +206,7 @@ lv_obj_t *create_top_bar(lv_obj_t *parent, const char *title, lv_event_cb_t back
   lv_obj_set_style_text_font(title_label, &arial, 0);
   lv_obj_align(title_label, LV_ALIGN_CENTER, 0, 0);
 
-  // hiện tại không dùng cái này vì nó không ổn cho việt refetch hàng h . 
+  // hiện tại không dùng cái này vì nó không ổn cho việt refetch hàng h .
   // Nút Refresh
   if (refresh_cb != NULL)
   {
@@ -210,6 +214,8 @@ lv_obj_t *create_top_bar(lv_obj_t *parent, const char *title, lv_event_cb_t back
     lv_obj_set_size(refresh_btn, 30, 50);
     lv_obj_align(refresh_btn, LV_ALIGN_RIGHT_MID, 0, 0);
     lv_obj_add_event_cb(refresh_btn, refresh_cb, LV_EVENT_CLICKED, refresh_cb_user_data);
+
+    lv_obj_add_style(refresh_btn, &style_pressed, LV_STATE_PRESSED);
 
     lv_obj_t *refresh_label = lv_label_create(refresh_btn);
     lv_label_set_text(refresh_label, LV_SYMBOL_REFRESH);
@@ -225,6 +231,8 @@ lv_obj_t *create_top_bar(lv_obj_t *parent, const char *title, lv_event_cb_t back
         // Quay về mainPage khi nhấn nút
         lv_scr_load(mainPage); }, LV_EVENT_CLICKED, NULL);
 
+  lv_obj_add_style(list_btn, &style_pressed, LV_STATE_PRESSED);
+
   lv_obj_t *list_label = lv_label_create(list_btn);
   lv_label_set_text(list_label, LV_SYMBOL_LIST);
   lv_obj_center(list_label);
@@ -237,6 +245,8 @@ lv_obj_t *create_top_bar(lv_obj_t *parent, const char *title, lv_event_cb_t back
                       {
         // Quay về mainPage khi nhấn nút
         lv_disp_load_scr(productionPage->getPage()); }, LV_EVENT_CLICKED, NULL);
+
+  lv_obj_add_style(home_btn, &style_pressed, LV_STATE_PRESSED);
 
   lv_obj_t *home_label = lv_label_create(home_btn);
   lv_label_set_text(home_label, LV_SYMBOL_HOME);
@@ -451,40 +461,39 @@ void memoryTask(void *pvParameters)
 
 TaskHandle_t LGVLRunTaskHandle = NULL;
 
-
 void LGVLRunTask(void *pvParameters)
 {
   while (1)
   {
     // lv_timer_handler(); /* let the GUI do its work */
-     lv_timer_handler_run_in_period(7);
+    lv_timer_handler_run_in_period(7);
     // Serial.println("tick");
     vTaskDelay(pdMS_TO_TICKS(5)); // Delay for 3 seconds (3000 ms)
 
-    if (inited == true)
-    {
-      // if (check_inactivity())
-      {
-        if (millis() > lastFetchTime)
-        {
-
-          Serial.println("start lastFetchTime: " + String(lastFetchTime) + " millis: " + String(millis()));
-          productionPage->fetchProducts();
-          lastFetchTime += 10000; // Thêm khoảng thời gian 10 giây vào mốc thời gian kế tiếp
-
-          Serial.println("end lastFetchTime: " + String(lastFetchTime) + " millis: " + String(millis()));
-
-           String message = String("Free Heap (xPort): ") + String((unsigned long)xPortGetFreeHeapSize()) + " bytes, Free Heap (ESP): " + String((unsigned long)ESP.getFreeHeap()) + " bytes, Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark(NULL) * 4) + " bytes." + "\n";
-
-           Serial.print("\n\n\nMMMMMMMMMMMMMMMMMM" + message);
-        }
-        vTaskDelay(pdMS_TO_TICKS(5));
-      }
-    }
-    // else
+    // if (inited == true)
     // {
-    //   // Serial.println("not inited");
+    //   // if (check_inactivity())
+    //   {
+    //     if (millis() > lastFetchTime)
+    //     {
+
+    //       Serial.println("start lastFetchTime: " + String(lastFetchTime) + " millis: " + String(millis()));
+    //       productionPage->fetchProducts();
+    //       lastFetchTime += 10000; // Thêm khoảng thời gian 10 giây vào mốc thời gian kế tiếp
+
+    //       Serial.println("end lastFetchTime: " + String(lastFetchTime) + " millis: " + String(millis()));
+
+    //        String message = String("Free Heap (xPort): ") + String((unsigned long)xPortGetFreeHeapSize()) + " bytes, Free Heap (ESP): " + String((unsigned long)ESP.getFreeHeap()) + " bytes, Stack High Water Mark: " + String(uxTaskGetStackHighWaterMark(NULL) * 4) + " bytes." + "\n";
+
+    //        Serial.print("\n\n\nMMMMMMMMMMMMMMMMMM" + message);
+    //     }
+    //     vTaskDelay(pdMS_TO_TICKS(5));
+    //   }
     // }
+    // // else
+    // // {
+    // //   // Serial.println("not inited");
+    // // }
   }
 }
 
@@ -950,7 +959,7 @@ void setup()
   lv_init();
 
   // Thiết lập phông chữ mặc định
-  //set_default_font();
+  // set_default_font();
 
   lv_disp_draw_buf_init(&draw_buf, buf[0], buf[1], screenWidth * 10);
 
@@ -971,23 +980,19 @@ void setup()
   indev_drv.read_cb = my_touchpad_read;
   lv_indev_drv_register(&indev_drv);
 
-
-     
-  xTaskCreate(
-      LGVLRunTask,       // Function that implements the task
-      "LVGL run Task",    // Name of the task
-      8048,             // Stack size in words (adjust if necessary)
-      NULL,             // Task input parameter (not used here)
-      1,                // Priority of the task
-      &LGVLRunTaskHandle // Task handle to track the task
-  );
-
+  // xTaskCreate(
+  //     LGVLRunTask,       // Function that implements the task
+  //     "LVGL run Task",    // Name of the task
+  //     8048,             // Stack size in words (adjust if necessary)
+  //     NULL,             // Task input parameter (not used here)
+  //     1,                // Priority of the task
+  //     &LGVLRunTaskHandle // Task handle to track the task
+  // );
 
   xTaskCreate(TaskUARTReceive, "TaskUARTReceive", 5040, NULL, 1, &TaskUARTReceive_handle);
 
   // Load config from NVS
   configMgr.loadConfig();
-  
 
   create_overlay_layer(); // Gọi hàm tạo overlay layer
 
@@ -998,7 +1003,7 @@ void setup()
   // Initialize Pages
   unloadPage = new UnloadPage(&configMgr);
   unloadPage->init();
- 
+
   downtimePage = new DowntimePage(&configMgr);
   downtimePage->init();
 
@@ -1019,7 +1024,7 @@ void setup()
 
   // Create the FreeRTOS task
 
-  xTaskCreate(TaskCheckAndReConnectCode, "TaskCheckAndReConnectCode", 2040, NULL, 1, &TaskCheckAndReConnectCode_handle);
+  xTaskCreate(TaskCheckAndReConnectCode, "TaskCheckAndReConnectCode", 3040, NULL, 1, &TaskCheckAndReConnectCode_handle);
 
   xTaskCreate(
       memoryTask,       // Function that implements the task
@@ -1033,15 +1038,16 @@ void setup()
   lv_disp_load_scr(productionPage->getPage());
 
   inited = true;
-  
+
+  last_touch_time = millis();
 }
 
 void loop()
 {
-  // lv_timer_handler(); /* let the GUI do its work */
+  lv_timer_handler(); /* let the GUI do its work */
 
   // lv_timer_handler_run_in_period(500); /* chạy lv_timer_handler() mỗi 5ms */
-  // delay(5);
+  delay(5);
   //  Serial.println("TTT");
   // // ver có khắc phục
   // if ((uint32_t)(millis() - lastFetchTime) > 10000)
@@ -1050,15 +1056,17 @@ void loop()
   //   lastFetchTime = millis();
   // }
 
-  // if (millis() > lastFetchTime)
-  // {
+  if (millis() > lastFetchTime)
+  {
+    if (check_inactivity())
+    {
+      // Serial.println("start lastFetchTime: " + String(lastFetchTime) + " millis: " + String(millis()));
+      productionPage->fetchProducts();
+      lastFetchTime += 10000; // Thêm khoảng thời gian 10 giây vào mốc thời gian kế tiếp
 
-  //   Serial.println("starrt lastFetchTime: " + String(lastFetchTime) + " millis: " + String(millis()));
-  //   productionPage->fetchProducts();
-  //   lastFetchTime += 10000; // Thêm khoảng thời gian 10 giây vào mốc thời gian kế tiếp
-
-  //   Serial.println("end lastFetchTime: " + String(lastFetchTime) + " millis: " + String(millis()));
-  // }
-  // delay(2);
+      // Serial.println("end lastFetchTime: " + String(lastFetchTime) + " millis: " + String(millis()));
+    }
+  }
+  delay(2);
   // Serial.println("MMM");
 }

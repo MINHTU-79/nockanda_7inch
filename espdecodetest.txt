@@ -1,17 +1,12 @@
-Guru Meditation Error: Core  1 panic'ed (LoadProhibited). Exception was unhandled.<\r><\n>
+
 <\r><\n>
 Core  1 register dump:<\r><\n>
-PC      : 0x4201dafe  PS      : 0x00060030  A0      : 0x8202016c  A1      : 0x3fcf69c0  <\r><\n>
-A2      : 0x3fca3290  A3      : 0x00000000  A4      : 0x00000021  A5      : 0x00000013  <\r><\n>
-A6      : 0x00060023  A7      : 0x00000003  A8      : 0x00060630  A9      : 0x400559e0  <\r><\n>
-A10     : 0x00000001  A11     : 0x3fca33c8  A12     : 0x00000010  A13     : 0x3fca33cc  <\r><\n>
-A14     : 0x00000001  A15     : 0x3fcf5220  SAR     : 0x0000001c  EXCCAUSE: 0x0000001c  <\r><\n>
-EXCVADDR: 0x00060634  LBEG    : 0x40056f5c  LEND    : 0x40056f72  LCOUNT  : 0xffffffff  <\r><\n>
+PC      : 0x420e286b  PS      : 0x00060930  A0      : 0x8200fd15  A1      : 0x3fcebe10  <\r><\n>
+A2      : 0x00000000  A3      : 0x00000001  A4      : 0x00000007  A5      : 0x00000000  <\r><\n>
+A6      : 0x3fcec118  A7      : 0x00000000  A8      : 0x00000007  A9      : 0x00000001  <\r><\n>
+A10     : 0x3fca39b8  A11     : 0x00000002  A12     : 0x00000002  A13     : 0x3fca898c  <\r><\n>
+A14     : 0x3fca88c4  A15     : 0x00000028  SAR     : 0x0000001a  EXCCAUSE: 0x0000001c  <\r><\n>
+EXCVADDR: 0x0000001c  LBEG    : 0x4202a805  LEND    : 0x4202a828  LCOUNT  : 0x00000002  <\r><\n>
 <\r><\n>
 <\r><\n>
-Backtrace: 0x4201dafb:0x3fcf69c0 0x42020169:0x3fcf69e0 0x420e2b5f:0x3fcf6a00 0x420247f1:0x3fcf6a20 0x42024827:0x3fcf6a40 0x42024965:0x3fcf6a60 0x420091fc:0x3fcf6a80 0x4200a3b3:0x3fcf6aa0 0x42010fd3:0x3fcf6cd0 0x4200e119:0x3fcf6fb0<\r><\n>
-<\r><\n>
-<\r><\n>
-<\r><\n>
-<\r><\n>
-ELF file SHA256: 2d7830db9fbcc310
+Backtrace: 0x420e2868:0x3fcebe10 0x4200fd12:0x3fcebe30 0x42011297:0x3fcebe50 0x4201d842:0x3fcebe70 0x4201d89e:0x3fcebe90 0x4201d9f2:0x3fcebed0 0x4201e058:0x3fcebf00 0x4202aed8:0x3fcebf50 0x4200e807:0x3fcebf80 0x4204bbf9:0x3fcebfa0<\r>

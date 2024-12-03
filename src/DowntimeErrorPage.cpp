@@ -487,6 +487,7 @@ void DowntimeErrorPage::fetchDowntimeError()
                 item.downtimeGroup = downtime["downtimeGroup"] | "";
                 item.userCreate = downtime["userCreate"] | "";
                 item.isEnable = downtime["isEnable"] | false;
+                item.selected = false;
                 downtimeDetails.push_back(item);
             }
 
@@ -564,16 +565,21 @@ static void item_event_cb(lv_event_t *e)
 {
     lv_obj_t *itemContainer = lv_event_get_target(e);
 
+
     // Lấy con trỏ đến item thông qua user data
     DowntimeErrorItem *itemData = static_cast<DowntimeErrorItem *>(lv_event_get_user_data(e));
+
+    Serial.println("Click on item downtime code selected: " + String(itemData->selected));
 
     // Đổi trạng thái
     if (itemData->selected) {
         lv_obj_set_style_bg_color(itemContainer, lv_color_white(), 0); // Trở về màu trắng
         itemData->selected = false;                                   // Bỏ select
+        Serial.println("unselect item downtime code");
     } else {
         lv_obj_set_style_bg_color(itemContainer, lv_palette_main(LV_PALETTE_RED), 0); // Đổi sang màu đỏ
         itemData->selected = true;                                                    // Select
+        Serial.println("select item downtime code");
     }
 }
 

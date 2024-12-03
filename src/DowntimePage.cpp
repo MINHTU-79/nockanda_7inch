@@ -126,7 +126,7 @@ void DowntimePage::updateUI()
     // Nhan Vien
     labelMet = lv_label_create(container);
     lv_label_set_text(labelMet, "Số mét N/A");
-    lv_obj_set_style_text_font(labelMet, &lv_font_montserrat_14, 0);  // Font chữ lớn hơn
+    lv_obj_set_style_text_font(labelMet, &arial, 0);  // Font chữ lớn hơn
     lv_obj_set_style_text_color(labelMet, lv_color_hex(0x333333), 0); // Màu chữ tối hơn
     lv_obj_set_width(labelMet, LV_PCT(98));
 
