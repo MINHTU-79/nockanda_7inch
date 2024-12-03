@@ -42,19 +42,26 @@ void NetworkModule::initConnect()
     // Gán con trỏ ssidViot tới mảng tạm thời
     ssidViot = tempBuffer;
 
-    // Thông tin mạng tĩnh
-    IPAddress local_ip(172, 16, 16, 81); // Địa chỉ IP tĩnh
-    IPAddress gateway(172, 16, 16, 1);   // Gateway (thường là IP router)
-    IPAddress subnet(255, 255, 254, 0);  // Subnet mask
-    IPAddress primaryDNS(172, 16, 16, 20);    // DNS chính (ví dụ Google DNS)
-    IPAddress secondaryDNS(172, 16, 16, 20);  // DNS phụ (tùy chọn)
+    // // Thông tin mạng tĩnh
+    // IPAddress local_ip(172, 16, 16, 81); // Địa chỉ IP tĩnh
+    // IPAddress gateway(172, 16, 16, 1);   // Gateway (thường là IP router)
+    // IPAddress subnet(255, 255, 254, 0);  // Subnet mask
+    // IPAddress primaryDNS(172, 16, 16, 20);    // DNS chính (ví dụ Google DNS)
+    // IPAddress secondaryDNS(172, 16, 16, 20);  // DNS phụ (tùy chọn)
 
-    // // Cấu hình mạng tĩnh
-    // if (!WiFi.config(local_ip, gateway, subnet, primaryDNS, secondaryDNS))
-    // {
-    //     Serial.println("Static IP configuration failed!");
-    //     return;
-    // }
+      // Thông tin mạng tĩnh
+    IPAddress local_ip(192, 168, 1, 189); // Địa chỉ IP tĩnh
+    IPAddress gateway(192, 168, 1, 1);   // Gateway (thường là IP router)
+    IPAddress subnet(255, 255, 255, 0);  // Subnet mask
+    IPAddress primaryDNS(8, 9, 8, 8);    // DNS chính (ví dụ Google DNS)
+    IPAddress secondaryDNS(8, 8, 4, 4);  // DNS phụ (tùy chọn)
+
+    // Cấu hình mạng tĩnh
+    if (!WiFi.config(local_ip, gateway, subnet, primaryDNS, secondaryDNS))
+    {
+        Serial.println("Static IP configuration failed!");
+        return;
+    }
 
     WiFi.begin(ssid, password);
     Serial.println("Start connection:");

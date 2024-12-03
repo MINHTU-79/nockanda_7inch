@@ -17,7 +17,7 @@
 #include <ElegantOTA.h>
 #include <Preferences.h>
 
-#define FIRMWARE_VERSION "1.0.0.0"
+#define FIRMWARE_VERSION "1.0.0.1"
 
 struct AppConfig
 {
