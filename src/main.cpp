@@ -819,6 +819,51 @@ void handleConfig(const String &line, Print &output)
     output.print("WiFi SSID: ");
     output.println(line.substring(9));
   }
+  else if (line.startsWith("local_ip="))
+  {
+    preferences.begin("app_config", false);
+    isSaved = preferences.putString("local_ip", line.substring(9));
+    preferences.end();
+
+    output.print("Local IP: ");
+    output.println(line.substring(9));
+  }
+  else if (line.startsWith("gateway="))
+  {
+    preferences.begin("app_config", false);
+    isSaved = preferences.putString("gateway", line.substring(8));
+    preferences.end();
+
+    output.print("Gateway: ");
+    output.println(line.substring(8));
+  }
+  else if (line.startsWith("subnet="))
+  {
+    preferences.begin("app_config", false);
+    isSaved = preferences.putString("subnet", line.substring(7));
+    preferences.end();
+
+    output.print("Subnet: ");
+    output.println(line.substring(7));
+  }
+  else if (line.startsWith("priDNS="))
+  {
+    preferences.begin("app_config", false);
+    isSaved = preferences.putString("priDNS", line.substring(7));
+    preferences.end();
+
+    output.print("Primary DNS: ");
+    output.println(line.substring(7));
+  }
+  else if (line.startsWith("secDNS="))
+  {
+    preferences.begin("app_config", false);
+    isSaved = preferences.putString("secDNS", line.substring(7));
+    preferences.end();
+
+    output.print("Secondary DNS: ");
+    output.println(line.substring(7));
+  }
   else if (line.startsWith("wifiPassword="))
   {
     preferences.begin("app_config", false);

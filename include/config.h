@@ -17,7 +17,7 @@
 #include <ElegantOTA.h>
 #include <Preferences.h>
 
-#define FIRMWARE_VERSION "1.0.0.1"
+#define FIRMWARE_VERSION "1.0.0.2"
 
 struct AppConfig
 {
@@ -25,6 +25,13 @@ struct AppConfig
   String wifiPassword;
   String httpIP;
   uint16_t httpPort;
+  // Biến cấu hình IP
+  String local_ip_str;     // Địa chỉ IP tĩnh
+  String gateway_str;      // Gateway
+  String subnet_str;       // Subnet mask
+  String primaryDNS_str;   // DNS chính (Primary DNS)
+  String secondaryDNS_str; // DNS phụ (Secondary DNS)
+
   String fxStationCode;
   String pathGetStation;
   String pathGetProduct;

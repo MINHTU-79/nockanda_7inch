@@ -201,7 +201,11 @@ void DowntimePage::updateUI()
 
         // Hiển thị vị trí
         lv_obj_t *labelPosition = lv_label_create(row1);
-        lv_label_set_text_fmt(labelPosition, "Vị trí: %d m", item.atMeter);
+        // lv_label_set_text_fmt(labelPosition, "Vị trí: %d m", item.atMeter);
+        // lv_label_set_text_fmt(labelPosition, "Vị trí: %f m", item.atMeter);
+        String positionText = String(item.atMeter, 2) + " m";                  // chuyển giá trị float thành chuỗi với 2 chữ số thập phân
+        lv_label_set_text(labelPosition, ("Vị trí: " + positionText).c_str()); // Tạo chuỗi hoàn chỉnh và truyền vào
+
         lv_obj_set_style_text_font(labelPosition, &arial, 0);
         lv_obj_set_style_text_align(labelPosition, LV_TEXT_ALIGN_RIGHT, 0); // Căn phải
 

@@ -1,15 +1,42 @@
 
 #include "NetworkModule.h"
-#include "NetworkConfig.h"
+// #include "NetworkModule.h"
 #include "config.h"
 #include <Arduino.h>
 #include <WiFi.h>
 #include <Preferences.h>
 #include "esp_task_wdt.h"
 
+
+
 extern Preferences preferences;
 extern ConfigManager configMgr;
 extern void update_wifi_status(bool connected);
+
+
+IPAddress convertStringToIP(String ipStr)
+{
+    int parts[4] = {0, 0, 0, 0}; // Mảng để lưu 4 phần của IP
+    int partIndex = 0;           // Vị trí của phần đang xử lý
+    String part = "";            // Biến lưu tạm phần hiện tại
+
+    for (int i = 0; i < ipStr.length(); i++)
+    {
+        if (ipStr[i] == '.' || i == ipStr.length() - 1)
+        { // Kiểm tra dấu '.' hoặc kết thúc chuỗi
+            if (i == ipStr.length() - 1)
+                part += ipStr[i];              // Thêm ký tự cuối cùng nếu đến cuối chuỗi
+            parts[partIndex++] = part.toInt(); // Chuyển đổi và lưu phần vào mảng
+            part = "";                         // Reset phần tạm
+        }
+        else
+        {
+            part += ipStr[i]; // Thêm ký tự vào phần tạm
+        }
+    }
+
+    return IPAddress(parts[0], parts[1], parts[2], parts[3]); // Tạo IPAddress từ mảng
+}
 
 void NetworkModule::initConnect()
 {
@@ -24,8 +51,13 @@ void NetworkModule::initConnect()
         WiFi.mode(WIFI_STA);
     }
 
-    ssid = configMgr.config.wifiSSID.c_str();
-    password = configMgr.config.wifiPassword.c_str();
+    // ssid = configMgr.config.wifiSSID.c_str();
+    // password = configMgr.config.wifiPassword.c_str();
+    // local_ip_str = configMgr.config.local_ip_str.c_str();
+    // gateway_str = configMgr.config.gateway_str.c_str();
+    // subnet_str = configMgr.config.subnet_str.c_str();
+    // primaryDNS_str = configMgr.config.primaryDNS_str.c_str();
+    // secondaryDNS_str = configMgr.config.secondaryDNS_str.c_str();
 
     int lastCheckTime;
     const char *ssidViot;
@@ -50,20 +82,39 @@ void NetworkModule::initConnect()
     // IPAddress secondaryDNS(172, 16, 16, 20);  // DNS phụ (tùy chọn)
 
       // Thông tin mạng tĩnh
-    IPAddress local_ip(192, 168, 1, 189); // Địa chỉ IP tĩnh
-    IPAddress gateway(192, 168, 1, 1);   // Gateway (thường là IP router)
-    IPAddress subnet(255, 255, 255, 0);  // Subnet mask
-    IPAddress primaryDNS(8, 9, 8, 8);    // DNS chính (ví dụ Google DNS)
-    IPAddress secondaryDNS(8, 8, 4, 4);  // DNS phụ (tùy chọn)
+    // IPAddress local_ip(192, 168, 1, 189); // Địa chỉ IP tĩnh
+    // IPAddress gateway(192, 168, 1, 1);   // Gateway (thường là IP router)
+    // IPAddress subnet(255, 255, 255, 0);  // Subnet mask
+    // IPAddress primaryDNS(8, 9, 8, 8);    // DNS chính (ví dụ Google DNS)
+    // IPAddress secondaryDNS(8, 8, 4, 4);  // DNS phụ (tùy chọn)
 
+    // Chuyển đổi các chuỗi IP thành IPAddress và cấu hình
+    IPAddress local_ip = convertStringToIP(configMgr.config.local_ip_str.c_str());
+    IPAddress gateway = convertStringToIP(configMgr.config.gateway_str.c_str());
+    IPAddress subnet = convertStringToIP(configMgr.config.subnet_str.c_str());
+    IPAddress primaryDNS = convertStringToIP(configMgr.config.primaryDNS_str.c_str());
+    IPAddress secondaryDNS = convertStringToIP(configMgr.config.secondaryDNS_str.c_str());
+
+    Serial.print("LLLLLLLLLLLLLLLLLLLLLLocal IP: ");
+    Serial.println(local_ip);
+    Serial.print("Gateway: ");
+    Serial.println(gateway);
+    Serial.print("Subnet mask: ");
+    Serial.println(subnet);
+    Serial.print("Primary DNS: ");
+    Serial.println(primaryDNS);
+    Serial.print("Secondary DNS: ");
+    Serial.println(secondaryDNS);
+ 
+ 
     // Cấu hình mạng tĩnh
-    if (!WiFi.config(local_ip, gateway, subnet, primaryDNS, secondaryDNS))
-    {
-        Serial.println("Static IP configuration failed!");
-        return;
-    }
+    // if (!WiFi.config(local_ip, gateway, subnet, primaryDNS, secondaryDNS))
+    // {
+    //     Serial.println("Static IP configuration failed!");
+    //     return;
+    // }
 
-    WiFi.begin(ssid, password);
+    WiFi.begin(configMgr.config.wifiSSID.c_str(), configMgr.config.wifiPassword.c_str());
     Serial.println("Start connection:");
     lastCheckTime = millis();
 
@@ -97,7 +148,7 @@ void NetworkModule::initConnect()
     // If connection successful show IP address
     Serial.println("");
     Serial.print("Connected to ");
-    Serial.println(ssid);
+    Serial.println(configMgr.config.wifiSSID.c_str());
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
     WiFi.mode(WIFI_STA);
@@ -119,7 +170,7 @@ void NetworkModule::reConnect()
             // WiFi.disconnect(true, true);
             // WiFi.begin(ssid, password);
             Serial.println("SSSSS");
-            WiFi.begin(ssid, password);
+            WiFi.begin(configMgr.config.wifiSSID.c_str(), configMgr.config.wifiPassword.c_str());
             Serial.println("Connecting..");
            update_wifi_status(false);
 
@@ -148,7 +199,7 @@ void NetworkModule::reConnect()
                 // If connection successful show IP address
                 Serial.println("");
                 Serial.print("Connected to ");
-                Serial.println(ssid);
+                Serial.println(configMgr.config.wifiSSID.c_str());
                 Serial.print("IP address: ");
                 Serial.println(WiFi.localIP());
                 configMgr.config.previouslyConnected == true;

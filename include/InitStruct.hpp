@@ -18,7 +18,7 @@ struct Product
 };
 
 struct DowntimeItem {
-    int atMeter;
+    float atMeter;
     String objectId;
     String id;
     String jobCode;

@@ -336,6 +336,10 @@ void ProductionPage::fetchProducts()
       // Extract main job data
       JsonObject job = doc.as<JsonObject>();
 
+      Serial.println("Job JSON:");
+      serializeJson(job, Serial);
+      Serial.println();
+
       tempRunningJob.stationCode = job["stationCode"] | "N/A";
       tempRunningJob.employee = job["employee"] | "N/A";
       tempRunningJob.productCode = job["productCode"] | "N/A";
@@ -351,7 +355,7 @@ void ProductionPage::fetchProducts()
         for (JsonObject downtime : downtimes)
         {
           DowntimeItem item;
-          item.atMeter = downtime["atMeter"] | -1;
+          item.atMeter = downtime["atMeter"] | 0.0f;
           item.objectId = downtime["objectId"] | "N/A";
           item.id = downtime["id"] | "N/A";
           item.jobCode = downtime["jobCode"] | "N/A";
@@ -389,6 +393,7 @@ void ProductionPage::fetchProducts()
 
       // Nếu tất cả dữ liệu hợp lệ, cập nhật vào roll
       roll = tempRunningJob;
+
 
       // Update UI with the new roll
       lv_label_set_text(labelNhanVien, ("Nhân viên: " + roll.employee).c_str());

@@ -6,6 +6,11 @@ ConfigManager::ConfigManager()
   config.wifiPassword = "KST_123789";
   config.httpIP = "192.168.1.179";
   config.httpPort = 5003;
+  config.local_ip_str = "192.168.1.189";
+  config.gateway_str = "192.168.1.1";
+  config.subnet_str = "255.255.255.0";
+  config.primaryDNS_str = "8.8.8.8";
+  config.secondaryDNS_str = "8.8.4.4";
   config.fxStationCode = "";
   config.pathGetStation = "/api/Station/AllPrCodeName";
   config.pathGetProduct = "/api/Product/AllPrCodeName";
@@ -24,6 +29,17 @@ bool ConfigManager::loadConfig()
   Serial.println("httpIP: " + config.httpIP);
   config.httpPort = preferences.getUShort("httpPort", 5002);
   Serial.println("httpPort: " + String(config.httpPort));
+  config.local_ip_str = preferences.getString("local_ip", "192.168.1.189");
+  Serial.println("local_ip_str: " + config.local_ip_str);
+  config.gateway_str = preferences.getString("gateway", "192.168.1.1");
+  Serial.println("gateway_str: " + config.gateway_str);
+  config.subnet_str = preferences.getString("subnet", "255.255.255.0");
+  Serial.println("subnet_str: " + config.subnet_str);
+  config.primaryDNS_str = preferences.getString("priDNS", "8.8.8.8");
+  Serial.println("primaryDNS_str: " + config.primaryDNS_str);
+  config.secondaryDNS_str = preferences.getString("secDNS", "8.8.4.4");
+  Serial.println("secondaryDNS_str: " + config.secondaryDNS_str);
+
   config.fxStationCode = preferences.getString("fxStationCode", "");
   Serial.println("fxStationCode: " + config.fxStationCode);
   config.pathGetStation = preferences.getString("pathGetStation", "/api/Station/AllPrCodeName");
@@ -48,6 +64,12 @@ bool ConfigManager::saveConfig()
   preferences.putString("wifiPassword", config.wifiPassword);
   preferences.putString("httpIP", config.httpIP);
   preferences.putUShort("httpPort", config.httpPort);
+  preferences.putString("local_ip", config.local_ip_str);
+  preferences.putString("gateway", config.gateway_str);
+  preferences.putString("subnet", config.subnet_str);
+  preferences.putString("priDNS", config.primaryDNS_str);
+  preferences.putString("secDNS", config.secondaryDNS_str);
+
   preferences.putString("fxStationCode", config.fxStationCode);
   preferences.putString("pathGetStation", config.pathGetStation);
   preferences.putString("pathGetProduct", config.pathGetProduct);
@@ -239,8 +261,20 @@ const char *HTML_CODE = R"rawliteral(
                 <label for="firmWareVersion">Firmware Version:</label>
                 <input type="text" id="firmWareVersion" name="firmWareVersion" value="%FIRMWAREVERSION%" readonly />
 
-                <label for="localIP">Local IP:</label>
-                <input type="text" id="localIP" name="localIP" value="%LOCALIP%" readonly />
+                <label for="localIPstr">Local IP str:</label>
+                <input type="text" id="localIPstr" name="localIPstr" value="%LOCALIPSTR%"/>
+
+                <label for="gatewaystr">Gateway str:</label>
+                <input type="text" id="gatewaystr" name="gatewaystr" value="%GATEWAYSTR%"/>
+
+                <label for="subnetstr">Subnet str:</label>
+                <input type="text" id="subnetstr" name="subnetstr" value="%SUBNETSTR%"/>
+
+                <label for="primaryDNSstr">Primary DNS str:</label>
+                <input type="text" id="primaryDNSstr" name="primaryDNSstr" value="%PRIMARYDNSSTR%"/>
+
+                <label for="secondaryDNSstr">Secondary DNS str:</label>
+                <input type="text" id="secondaryDNSstr" name="secondaryDNSstr" value="%SECONDARYDNSSTR%"/>
 
                 <label for="ssid">New SSID:</label>
                 <input type="text" id="ssid" name="ssid" value="%SSID%" required />
@@ -256,6 +290,9 @@ const char *HTML_CODE = R"rawliteral(
 
                 <label for="httpPort">HTTP Port:</label>
                 <input type="number" id="httpPort" name="httpPort" value="%HTTPPORT%" required />
+
+                 <label for="localIP">New SSID:</label>
+                <input type="text" id="ssid" name="ssid" value="%SSID%" required />
 
                 <label for="fxStationCode">FX Station Code:</label>
                 <input type="text" id="fxStationCode" name="fxStationCode" value="%FXSTATIONCODE%" />
@@ -309,6 +346,12 @@ void onUpdateRoute(AsyncWebServerRequest *request)
     String newHttpIP = request->getParam("httpIP", true)->value();
     String newHttpPortStr = request->getParam("httpPort", true)->value();
     uint16_t newHttpPort = newHttpPortStr.toInt();
+    String newlocalIP = request->getParam("localIPstr", true)->value();
+    String newgatewayIP = request->getParam("gatewaystr", true)->value();
+    String newsubnetMask = request->getParam("subnetstr", true)->value();
+    String newprimaryDNS = request->getParam("primaryDNSstr", true)->value();
+    String newsecondaryDNS = request->getParam("secondaryDNSstr", true)->value();
+
     String newFxStationCode = request->getParam("fxStationCode", true)->value();
     String newPathGetStation = request->getParam("pathGetStation", true)->value();
     String newPathGetProduct = request->getParam("pathGetProduct", true)->value();
@@ -320,6 +363,12 @@ void onUpdateRoute(AsyncWebServerRequest *request)
     configMgr.config.wifiPassword = newPassword;
     configMgr.config.httpIP = newHttpIP;
     configMgr.config.httpPort = newHttpPort;
+    configMgr.config.local_ip_str = newlocalIP;
+    configMgr.config.gateway_str = newgatewayIP;
+    configMgr.config.subnet_str = newsubnetMask;
+    configMgr.config.primaryDNS_str = newprimaryDNS;
+    configMgr.config.secondaryDNS_str = newsecondaryDNS;
+
     configMgr.config.fxStationCode = newFxStationCode;
     configMgr.config.pathGetStation = newPathGetStation;
     configMgr.config.pathGetProduct = newPathGetProduct;
@@ -364,6 +413,11 @@ void handleConfig(AsyncWebServerRequest *request)
   html.replace("%PASSWORD%", configMgr.config.wifiPassword);
   html.replace("%HTTPIP%", configMgr.config.httpIP);
   html.replace("%HTTPPORT%", String(configMgr.config.httpPort));
+  html.replace("%LOCALIPSTR%", configMgr.config.local_ip_str);
+  html.replace("%GATEWAYSTR%", configMgr.config.gateway_str);
+  html.replace("%SUBNETSTR%", configMgr.config.subnet_str);
+  html.replace("%PRIMARYDNSSTR%", configMgr.config.primaryDNS_str);
+  html.replace("%SECONDARYDNSSTR%", configMgr.config.secondaryDNS_str);
   html.replace("%FXSTATIONCODE%", configMgr.config.fxStationCode);
   html.replace("%PATHGETSTATION%", configMgr.config.pathGetStation);
   html.replace("%PATHGETPRODUCT%", configMgr.config.pathGetProduct);

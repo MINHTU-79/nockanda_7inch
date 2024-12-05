@@ -231,7 +231,7 @@ void DowntimeErrorPage::handleOption1(String rollPrefix)
 
         if (httpCode == HTTP_CODE_OK)
         {
-            showResult("Thanh cong", response);
+            showResult("Thành công", response);
 
             productionPage->fetchProducts();
 
@@ -239,7 +239,7 @@ void DowntimeErrorPage::handleOption1(String rollPrefix)
         }
         else
         {
-            showResult("That bai", "Loi: " + String(httpCode) + ", Tin nhan: " + response);
+            showResult("Thất bại", "Lỗi: " + String(httpCode) + ", Tin nhắn: " + response);
         }
 
 
@@ -247,7 +247,7 @@ void DowntimeErrorPage::handleOption1(String rollPrefix)
     else
     {
         // Không có item nào được chọn
-           showResult("Loi:", "Phai chon it nhat mot loi!");
+           showResult("Lỗi:", "Phải chọn ít nhất một lỗi!");
     }
     // String rollPrefix = rollPrefix; // Thay thế bằng giá trị thực tế
 
@@ -295,8 +295,13 @@ void DowntimeErrorPage::showResult(const String &title, const String &message)
 {
     // Tạo hộp thoại thông báo
     lv_obj_t *msgbox = lv_msgbox_create(NULL, title.c_str(), message.c_str(), NULL, true);
-    // lv_obj_set_style_text_font(msgbox, &arial, 0);
+    lv_obj_set_style_text_font(msgbox, &arial, 0);
     lv_obj_center(msgbox);
+    /* Lấy nút Close */
+lv_obj_t *close_btn = lv_msgbox_get_close_btn(msgbox);
+
+/* Thay ký tự mặc định bằng '×' */
+lv_label_set_text(lv_obj_get_child(close_btn, 0), "×");
 
     // // Tạo bộ hẹn giờ tự động xóa hộp thoại sau 2 giây
     // lv_timer_t *timer = lv_timer_create([](lv_timer_t *timer) {
@@ -507,7 +512,8 @@ void DowntimeErrorPage::fetchDowntimeError()
         else
         {
             Serial.printf("HTTP request failed, code: %d\n", httpCode);
-            showError("Không thể  lấy Mã dừng máy. Code: " + String(httpCode));
+            // tạm thời không cần dùng
+            // showError("Không thể  lấy Mã dừng máy. Code: " + String(httpCode));
         }
     }
     catch (...)
@@ -536,6 +542,12 @@ void DowntimeErrorPage::showError(const String &message)
     lv_obj_t *msgbox = lv_msgbox_create(NULL, "Lỗi", message.c_str(), NULL, true);
     lv_obj_set_style_text_font(msgbox, &arial, 0);
     lv_obj_center(msgbox);
+
+    /* Lấy nút Close */
+lv_obj_t *close_btn = lv_msgbox_get_close_btn(msgbox);
+
+/* Thay ký tự mặc định bằng '×' */
+lv_label_set_text(lv_obj_get_child(close_btn, 0), "×");
 
     // // Tạo bộ hẹn giờ tự động xóa hộp thoại sau 2 giây
     // lv_timer_t *timer = lv_timer_create([](lv_timer_t *timer) {
